@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BALF Supermarket - Save Money. Live Better.</title>
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+    <div class="container top-bar-inner">
+        <div class="top-links">
+            <a href="#" onclick="openStoreLocator(); return false;">Store Locator</a>
+            <a href="#" onclick="openTrackOrder(); return false;">Track Order</a>
+            <a href="#" onclick="openHelp(); return false;">Help</a>
+        </div>
+        <div class="top-links" id="authArea">
+            <span>🇳🇬 NGN</span>
+            <a href="#" id="signInLink" onclick="openAuth('signin'); return false;">Sign In</a>
+            <a href="#" class="btn-create" id="createAccountLink" onclick="openAuth('create'); return false;">Create Account</a>
+        </div>
+    </div>
+</div>
+
+<!-- Header -->
+<header class="main-header">
+    <div class="container header-inner">
+        <a href="#" class="logo" onclick="showPage('home'); return false;">
+            <img src="logo.svg" alt="BALF logo" class="logo-img" onerror="this.src='https://via.placeholder.com/40/0a1f44/ffffff?text=B'">
+            <span class="logo-wrap">
+                <span class="logo-text">BALF</span>
+                <span class="logo-sub">Supermarket</span>
+            </span>
+        </a>
+
+        <div class="search-container">
+            <form class="search-box" onsubmit="event.preventDefault(); handleHeaderSearch(this.q.value);">
+                <input type="text" name="q" placeholder="Search everything at BALF..." aria-label="Search">
+                <button type="submit" aria-label="Search">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
+            </form>
+        </div>
+
+        <div class="header-actions">
+            <a href="#" class="action-item" onclick="openAuth('signin'); return false;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span>Account</span>
+            </a>
+            <button class="action-item cart-btn" onclick="toggleCart()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                <span>Cart</span>
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
+        </div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="container">
+            <a href="#" class="active" data-page="home" onclick="showPage('home'); return false;">All Departments</a>
+            <a href="#" data-page="groceries" onclick="showPage('groceries'); return false;">Groceries</a>
+            <a href="#" data-page="fresh" onclick="showPage('fresh'); return false;">Fresh Produce</a>
+            <a href="#" data-page="homekitchen" onclick="showPage('homekitchen'); return false;">Home & Kitchen</a>
+            <a href="#" data-page="deals" class="nav-deal" onclick="showPage('deals'); return false;">Deals</a>
+        </div>
+    </nav>
+</header>
+
+<!-- Pickup/Delivery Bar -->
+<div class="fulfillment-bar">
+    <div class="container">
+        <span class="fulfillment-label">How do you want your items?</span>
+        <div class="fulfillment-options">
+            <button class="fulfill-btn active" id="btnDelivery" onclick="openFulfillment('delivery')">Delivery</button>
+            <button class="fulfill-btn" id="btnPickup" onclick="openFulfillment('pickup')">Pickup</button>
+        </div>
+        <div class="fulfillment-status" id="fulfillmentStatus">
+            <a href="#" id="fulfillmentText" onclick="reopenFulfillment(); return false;">📍 Set your delivery address</a>
+        </div>
+        <div class="fulfillment-location">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <select id="branchQuickSelect">
+                <option>Lagos - Ikeja</option>
+                <option>Lagos - Lekki</option>
+                <option>Abuja - Wuse</option>
+                <option>Port Harcourt - GRA</option>
+                <option>Ibadan - Bodija</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Universal Modal -->
+<div class="modal-overlay" id="appModalOverlay">
+    <div class="modal" id="appModal">
+        <button class="modal-close" onclick="closeAppModal()">✕</button>
+        <div id="appModalContent"></div>
+    </div>
+</div>
+
+<!-- ============ PAGE: HOME ============ -->
+<main id="page-home" class="page active">
+    <div class="container">
+        <section class="hero-grid">
+            <div class="hero-card large" style="background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('image/inside 3.png');">
+                <div class="hero-content">
+                    <span class="hero-tag">Fresh & Fast</span>
+                    <h1>Groceries Delivered Same-Day</h1>
+                    <p>Order before 2pm for same-day delivery in Lagos.</p>
+                    <button class="btn-primary" onclick="showPage('groceries')">Shop Groceries</button>
+                </div>
+            </div>
+            <div class="hero-stack">
+                <div class="hero-card small" style="background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('image/inside1.jpg');">
+                    <div class="hero-content">
+                        <h3>Bulk Deals</h3>
+                        <p>Save up to 20% on rice & oil.</p>
+                    </div>
+                </div>
+                <div class="hero-card small" style="background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('image/inside2.jpg');">
+                    <div class="hero-content">
+                        <h3>Home Essentials</h3>
+                        <p>New arrivals just landed.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-header"><h2>Shop by Category</h2></div>
+            <div class="category-row" id="homeCategories"></div>
+        </section>
+
+        <section class="section">
+            <div class="section-header">
+                <h2>Flash Deals</h2>
+                <a href="#" onclick="showPage('deals'); return false;" class="link-all">View All</a>
+            </div>
+            <div class="product-grid" id="homeDeals"></div>
+        </section>
+
+        <section class="section">
+            <div class="section-header"><h2>Trending at BALF</h2></div>
+            <div class="product-grid" id="homeTrending"></div>
+        </section>
+    </div>
+</main>
+
+<!-- ============ PAGE: GROCERIES ============ -->
+<main id="page-groceries" class="page">
+    <div class="container">
+        <div class="section-header" style="margin-top:24px"><h2>Groceries</h2></div>
+        <div class="product-grid" id="groceriesGrid"></div>
+    </div>
+</main>
+
+<!-- ============ PAGE: FRESH PRODUCE ============ -->
+<main id="page-fresh" class="page">
+    <div class="container">
+        <div class="section-header" style="margin-top:24px"><h2>Fresh Produce</h2></div>
+        <div class="product-grid" id="freshGrid"></div>
+    </div>
+</main>
+
+<!-- ============ PAGE: HOME & KITCHEN ============ -->
+<main id="page-homekitchen" class="page">
+    <div class="container">
+        <div class="section-header" style="margin-top:24px"><h2>Home & Kitchen</h2></div>
+        <div class="product-grid" id="homekitchenGrid"></div>
+    </div>
+</main>
+
+<!-- ============ PAGE: DEPARTMENTS ============ -->
+<main id="page-departments" class="page">
+    <div class="container page-layout">
+        <aside class="sidebar">
+            <h3>Departments</h3>
+            <ul id="deptSidebar"></ul>
+        </aside>
+        <div class="main-content">
+            <div class="section-header" style="margin-top:0"><h2 id="deptTitle">All Departments</h2></div>
+            <div class="product-grid" id="deptProducts"></div>
+        </div>
+    </div>
+</main>
+
+<!-- ============ PAGE: DEALS ============ -->
+<main id="page-deals" class="page">
+    <div class="container">
+        <div class="section-header" style="margin-top:24px"><h2>Today's Deals</h2><p>Limited-time savings</p></div>
+        <div class="product-grid" id="dealsPageGrid"></div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="site-footer">
+    <div class="container footer-grid">
+        <div class="footer-col footer-brand">
+            <a href="#" class="logo footer-logo" onclick="showPage('home'); return false;">
+                <img src="logo.svg" alt="BALF logo" class="logo-img" onerror="this.src='https://via.placeholder.com/40/0a1f44/ffffff?text=B'">
+                <span class="logo-wrap">
+                    <span class="logo-text">BALF</span>
+                    <span class="logo-sub">Supermarket</span>
+                </span>
+            </a>
+            <p>Nigeria's trusted one-stop shop. Save money. Live better.</p>
+        </div>
+        <div class="footer-col">
+            <h4>Shop</h4>
+            <a href="#" onclick="showPage('groceries'); return false;">Groceries</a>
+            <a href="#" onclick="showPage('fresh'); return false;">Fresh Produce</a>
+            <a href="#" onclick="showPage('homekitchen'); return false;">Home & Kitchen</a>
+            <a href="#" onclick="showPage('deals'); return false;">Deals</a>
+        </div>
+        <div class="footer-col">
+            <h4>Customer Service</h4>
+            <a href="#" onclick="openHelp(); return false;">Help Center</a>
+            <a href="#" onclick="openTrackOrder(); return false;">Track Order</a>
+            <a href="#" onclick="openHelp('returns'); return false;">Returns</a>
+        </div>
+        <div class="footer-col">
+            <h4>Company</h4>
+            <a href="#" onclick="openHelp('about'); return false;">About BALF</a>
+            <a href="#" onclick="openHelp('careers'); return false;">Careers</a>
+            <a href="#" onclick="openStoreLocator(); return false;">Locations</a>
+        </div>
+    </div>
+    <div class="container footer-bottom">
+        <p>© 2026 BALF Supermarket Ltd. All rights reserved.</p>
+    </div>
+</footer>
+
+<!-- Cart Drawer -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<aside class="cart-drawer" id="cartDrawer">
+    <div class="cart-header">
+        <h3>Your Cart</h3>
+        <button onclick="toggleCart()">✕</button>
+    </div>
+    <div class="cart-body" id="cartBody"><p class="cart-empty">Your cart is empty.</p></div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+        <div class="cart-total"><span>Subtotal</span><b id="cartSubtotal">₦0</b></div>
+        <button class="btn-primary full-width" onclick="checkout()">Checkout</button>
+    </div>
+</aside>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
